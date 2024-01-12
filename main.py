@@ -3,7 +3,7 @@ import pickle
 import pandas as pd
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QLabel, QRadioButton, QHBoxLayout, \
     QDoubleSpinBox, QComboBox, QMessageBox
-
+import numpy as np
 
 def load_model(file_path):
     with open(file_path, 'rb') as model_file:
@@ -281,6 +281,11 @@ class MainWindow(QMainWindow):
                 predictions = selected_model.predict(input_df)
                 pred_sgpa_value = predictions[0, 0]
                 pred_cgpa_value = predictions[0, 1]
+
+            if isinstance(pred_sgpa_value, np.ndarray): 
+                pred_sgpa_value = pred_sgpa_value.item()
+            if isinstance(pred_cgpa_value, np.ndarray):
+                pred_cgpa_value = pred_cgpa_value.item()  
 
             self.pred_sgpa.setText(f'{pred_sgpa_value:.2f}')
             self.pred_cgpa.setText(f'{pred_cgpa_value:.2f}')
