@@ -3,10 +3,6 @@ import pickle
 import pandas as pd
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QPushButton, QLabel, QRadioButton, QHBoxLayout, \
     QDoubleSpinBox, QComboBox
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
-from sklearn.svm import SVR
-from sklearn.linear_model import LinearRegression, Lasso
-from sklearn.tree import DecisionTreeRegressor
 
 
 def load_model(file_path):
