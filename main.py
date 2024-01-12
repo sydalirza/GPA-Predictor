@@ -242,7 +242,7 @@ class MainWindow(QMainWindow):
                 'Gender', 'Availing any scholarship', 'Matric percentage',
                 'Intermediate percentage', 'SGPA in BS First semester',
                 'SGPA in BS Second semester', 'SGPA in BS Third semester',
-                'SGPA in BS Fourth semester', "I opted for this program of study because of my own interest."
+                'SGPA in BS Fourth semester', 'Interest Level'
             ])
 
             predictions = selected_model.predict(input_df)
