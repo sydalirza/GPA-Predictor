@@ -99,7 +99,6 @@ if __name__ == '__main__':
 
     target_column_sgp5 = 'SGPA in BS Fifth semester'
 
-    # To train the Support Vector Regressor for 'CGPA in BS Fifth semester'
     target_column_cgpa5 = 'CGPA in BS Fifth semester'
 
     X = df[input_columns]
