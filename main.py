@@ -11,11 +11,30 @@ def load_model(file_path):
     return model
 
 
-def show_popup(title, message):
+def show_popup(title, message, pred_sgpa=None, pred_cgpa=None, comment=None):
     msg = QMessageBox()
     msg.setWindowTitle(title)
+    msg.setIcon(QMessageBox.Information)  # Added an information icon
+
+    if pred_sgpa is not None and pred_cgpa is not None:
+        message += f"\n\nPredicted SGPA: {pred_sgpa:.2f}\nPredicted CGPA: {pred_cgpa:.2f}"
+
+    if comment is not None:
+        message += f"\n\nPerformance Comment: {comment}"
+
     msg.setText(message)
+
+    # Set larger font size for better readability
+    font = msg.font()
+    font.setPointSize(10)
+    msg.setFont(font)
+
+    # Set a larger size for the message box
+    msg.setGeometry(window.geometry().x() + window.geometry().width() // 2 - 300,
+                    window.geometry().y() + window.geometry().height() // 2 - 200, 600, 400)
+
     msg.exec_()
+
 
 
 def get_performance_comment(cgpa):
@@ -46,20 +65,22 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
 
-        self.setGeometry(0, 0, 800, 600)  # Adjusted the main window size
+        self.setGeometry(0, 0, 800, 520)  # Adjusted the main window size
         self.setWindowTitle("Engineering Management Project")
 
         central_widget = QWidget(self)
         self.setCentralWidget(central_widget)
 
-        self.title_labl = QLabel("ENGINEERING MANAGEMENT PROJECT", central_widget)
-        self.title_labl.setGeometry(200, 10, 601, 51)  # Adjusted the position
+        self.title_labl = QLabel("GPA Prediction Model", central_widget)
+        self.title_labl.setGeometry(270, 10, 601, 51)  # Adjusted the position
         font = self.title_labl.font()
         font.setPointSize(22)
+        font.setBold(True)  # Making the font bold
+        font.setFamily("Arial")  # Setting the font family
         self.title_labl.setFont(font)
 
         self.horizontalLayoutWidget = QWidget(central_widget)
-        self.horizontalLayoutWidget.setGeometry(20, 400, 651, 41)  # Adjusted the position
+        self.horizontalLayoutWidget.setGeometry(50, 400, 651, 41)  # Adjusted the position
         self.horizontalLayout = QHBoxLayout(self.horizontalLayoutWidget)
 
         self.model1 = QRadioButton("Linear Regression", self.horizontalLayoutWidget)
@@ -92,27 +113,11 @@ class MainWindow(QMainWindow):
         font.setPointSize(12)
         self.user_details_labl.setFont(font)
 
-        self.prediction_labl = QLabel("Prediction", central_widget)
-        self.prediction_labl.setGeometry(20, 470, 131, 20)  # Adjusted the position
-        font = self.prediction_labl.font()
-        font.setPointSize(12)
-        self.prediction_labl.setFont(font)
-
-        self.pred_sgpa_labl = QLabel("SGPA of 5th Semester", central_widget)
-        self.pred_sgpa_labl.setGeometry(20, 500, 131, 20)  # Adjusted the position
-
-        self.pred_cgpa_labl = QLabel("CGPA of 5th Semester", central_widget)
-        self.pred_cgpa_labl.setGeometry(220, 500, 131, 20)  # Adjusted the position
-
-        self.pred_sgpa = QLabel("IDK", central_widget)
-        self.pred_sgpa.setGeometry(20, 520, 61, 21)  # Adjusted the position
-
-        self.pred_cgpa = QLabel("IDK", central_widget)
-        self.pred_cgpa.setGeometry(220, 520, 61, 21)  # Adjusted the position
-
         self.predict_btn = QPushButton("PREDICT", central_widget)
-        self.predict_btn.setGeometry(600, 500, 150, 41)  # Adjusted the position
-        self.predict_btn.setStyleSheet("QPushButton { background-color: green; color: white; font-weight: bold; }")
+        self.predict_btn.setGeometry(20, 450, 760, 41)  # Adjusted the position
+        self.predict_btn.setStyleSheet(
+            "QPushButton { background-color: green; color: white; font-weight: bold; border-radius: 10px; }"
+        )
         self.predict_btn.clicked.connect(self.predict)
 
         self.widget = QWidget(central_widget)
@@ -159,25 +164,25 @@ class MainWindow(QMainWindow):
         self.sel_gpa1.setGeometry(660, 20, 71, 22)
         self.sel_gpa1.setMaximum(4.0)
         self.sel_gpa1.setSingleStep(0.2)
-        self.sel_gpa1.setValue(1.0)
+        self.sel_gpa1.setValue(0.0)
 
         self.sel_gpa2 = QDoubleSpinBox(self.widget)
         self.sel_gpa2.setGeometry(660, 60, 71, 22)
         self.sel_gpa2.setMaximum(4.0)
         self.sel_gpa2.setSingleStep(0.2)
-        self.sel_gpa2.setValue(1.0)
+        self.sel_gpa2.setValue(0.0)
 
         self.sel_gpa3 = QDoubleSpinBox(self.widget)
         self.sel_gpa3.setGeometry(660, 100, 71, 22)
         self.sel_gpa3.setMaximum(4.0)
         self.sel_gpa3.setSingleStep(0.2)
-        self.sel_gpa3.setValue(1.0)
+        self.sel_gpa3.setValue(0.0)
 
         self.sel_gpa4 = QDoubleSpinBox(self.widget)
         self.sel_gpa4.setGeometry(660, 140, 71, 22)
         self.sel_gpa4.setMaximum(4.0)
         self.sel_gpa4.setSingleStep(0.2)
-        self.sel_gpa4.setValue(1.0)
+        self.sel_gpa4.setValue(0.0)
 
         self.horizontalLayoutWidget_2 = QWidget(self.widget)
         self.horizontalLayoutWidget_2.setGeometry(240, 60, 151, 32)
@@ -205,7 +210,7 @@ class MainWindow(QMainWindow):
         self.interest_label.setGeometry(470, 180, 400, 21)
 
         self.interest_combobox = QComboBox(self.widget)
-        self.interest_combobox.setGeometry(660, 180, 151, 22)
+        self.interest_combobox.setGeometry(500, 180, 151, 22)
         self.interest_combobox.addItems(["Strongly Disagree", "Disagree", "Neutral", "Agree", "Strongly Agree"])
 
         self.interest_label.move(50, 180)
@@ -287,11 +292,8 @@ class MainWindow(QMainWindow):
             if isinstance(pred_cgpa_value, np.ndarray):
                 pred_cgpa_value = pred_cgpa_value.item()  
 
-            self.pred_sgpa.setText(f'{pred_sgpa_value:.2f}')
-            self.pred_cgpa.setText(f'{pred_cgpa_value:.2f}')
-
             comment = get_performance_comment(pred_sgpa_value)
-            show_popup('Performance Comment', comment)
+            show_popup('Performance Comment', comment, pred_sgpa_value, pred_cgpa_value)
 
 
 if __name__ == '__main__':
